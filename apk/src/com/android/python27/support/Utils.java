@@ -1,3 +1,25 @@
+/*
+ * Copyright (C) 2010 Google Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ */
+
+/*
+ * Copyright (C) 2012, Anthony Prieur & Daniel Oppenheim. All rights reserved.
+ *
+ * Original from SL4A modified to allow to embed Interpreter and scripts into an APK
+ */
+
 package com.android.python27.support;
 
 import android.os.Environment;
@@ -101,7 +123,7 @@ public class Utils {
 		       }
 		       
 		       // enable standalone python
-		       if(file.getName().endsWith(".so")) {
+		       if(file.getName().endsWith(".so") || file.getName().endsWith(".xml") || file.getName().endsWith(".py") || file.getName().endsWith(".pyc") || file.getName().endsWith(".pyo")) {
 			       FileUtils.chmod(file, 0755);
 		       }
 
@@ -146,7 +168,7 @@ public class Utils {
 	  
 	public static void createDirectoryOnExternalStorage(String path) {
         try {
-    		if(Environment.getExternalStorageState().equalsIgnoreCase("mounted")) {
+    		//if(Environment.getExternalStorageState().equalsIgnoreCase("mounted")) {
     		    File file = new File(Environment.getExternalStorageDirectory(), path);
     		    if (!file.exists()) {
     		    	try {
@@ -157,10 +179,10 @@ public class Utils {
     		            Log.e(GlobalConstants.LOG_TAG,"createDirectoryOnExternalStorage error: ", e);
     				}
     		    }		
-    		}
-    		else {
-                Log.e(GlobalConstants.LOG_TAG,"createDirectoryOnExternalStorage error: " + "External storage is not mounted");		
-    		}
+    		//}
+    		//else {
+            //    Log.e(GlobalConstants.LOG_TAG,"createDirectoryOnExternalStorage error: " + "External storage is not mounted");		
+    		//}
 		} catch (Exception e) {
             Log.e(GlobalConstants.LOG_TAG,"createDirectoryOnExternalStorage error: " + e);		
 		}

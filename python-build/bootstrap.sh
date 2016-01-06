@@ -27,7 +27,10 @@ if [ ! -e "$BUILDDIR/Python" ]; then
     
     patch -p1 < "$ROOTDIR/patch/Python-2.7.2-xcompile.patch"
     patch -p1 < "$ROOTDIR/patch/Python-2.7.2-android.patch"
+    #patch -p1 -i "$ROOTDIR/patch/Python-2.7.2-getplatform.patch"
     patch -p1 -i "$ROOTDIR/patch/Python-2.7.2-site-relax-include-config.patch"
+    patch -p1 -i "$ROOTDIR/patch/Python-2.7.2-enable_ipv6.patch"
+    patch -p1 -i "$ROOTDIR/patch/Python-2.7.2-filesystemdefaultencoding.patch"
 fi
 
 
@@ -43,7 +46,25 @@ fi
 
 if [ ! -e "$BUILDDIR/openssl" ]; then
     cd "$BUILDDIR"
-    git clone https://github.com/guardianproject/openssl-android.git openssl
+    git clone https://github.com/devpack/openssl-android.git openssl
+fi
+
+if [ ! -e "$BUILDDIR/pycrypto-2.6" ]; then
+    cd "$BUILDDIR"
+    set_downloader
+    downloader http://pypi.python.org/packages/source/p/pycrypto/pycrypto-2.6.tar.gz
+    tar zxvf pycrypto-2.6.tar.gz
+    cd "$BUILDDIR/pycrypto-2.6"
+    patch -p1 -i "$ROOTDIR/patch/pycrypto-2.6-customize_compiler.patch"
+fi
+
+if [ ! -e "$BUILDDIR/psutil-0.6.1" ]; then
+    cd "$BUILDDIR"
+    set_downloader
+    downloader http://psutil.googlecode.com/files/psutil-0.6.1.tar.gz
+    tar zxvf psutil-0.6.1.tar.gz
+    cd "$BUILDDIR/psutil-0.6.1"
+    patch -p1 -i "$ROOTDIR/patch/psutil-0.6.1-android.patch"
 fi
 
 if [ ! -d "$BUILDDIR/toolchain" ]; then

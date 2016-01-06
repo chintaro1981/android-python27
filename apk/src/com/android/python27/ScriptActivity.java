@@ -1,3 +1,25 @@
+/*
+ * Copyright (C) 2010 Google Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ */
+
+/*
+ * Copyright (C) 2012, Anthony Prieur & Daniel Oppenheim. All rights reserved.
+ *
+ * Original from SL4A modified to allow to embed Interpreter and scripts into an APK
+ */
+
 package com.android.python27;
 
 import com.android.python27.config.GlobalConstants;
@@ -23,35 +45,26 @@ import android.widget.Button;
 import android.widget.Toast;
 
 public class ScriptActivity extends Activity {
-	Button buttonInstall;
 	ProgressDialog myProgressDialog; 
 	  
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		// mounted sdcard ?
-		if (!Environment.getExternalStorageState().equals("mounted")) {
-		  Log.e(GlobalConstants.LOG_TAG, "External storage is not mounted");
-		  
-		  Toast toast = Toast.makeText( getApplicationContext(), "External storage not mounted", Toast.LENGTH_LONG);
-		  toast.show();
-		  return;
-		}
+		//if (!Environment.getExternalStorageState().equals("mounted")) {
+		//  Log.e(GlobalConstants.LOG_TAG, "External storage is not mounted");
+		//  
+		//  Toast toast = Toast.makeText( getApplicationContext(), "External storage not mounted", Toast.LENGTH_LONG);
+		//  toast.show();
+		//  return;
+		//}
 	  
 		// install needed ?
     	boolean installNeeded = isInstallNeeded();
 		
     	if(installNeeded) {
-    		setContentView(R.layout.install);
-    	     
-    		buttonInstall = (Button)findViewById(R.id.startinstall);
-    		buttonInstall.setOnClickListener(new Button.OnClickListener(){
-
-    		@Override
-    		public void onClick(View v) {
-    		  new InstallAsyncTask().execute();
-    		  buttonInstall.setClickable(false);
-    		}});
+    	  setContentView(R.layout.install);	
+  		  new InstallAsyncTask().execute();
     	}
     	else {
     	    runScriptService();
@@ -142,7 +155,12 @@ public class ScriptActivity extends Activity {
 	  }
 	
   private void runScriptService() {
-	  startService(new Intent(this, ScriptService.class));
+	  if(GlobalConstants.IS_FOREGROUND_SERVICE) {
+		  startService(new Intent(this, ScriptService.class));
+	  }
+	  else {
+		  startService(new Intent(this, BackgroundScriptService.class)); 
+	  }
   }
   
 	private void createOurExternalStorageRootDir() {
@@ -183,7 +201,7 @@ public class ScriptActivity extends Activity {
 					// python -> /data/data/com.android.python27/files/python
 					else if (sFileName.endsWith(GlobalConstants.PYTHON_ZIP_NAME)) {
 						succeed &= Utils.unzip(content, this.getFilesDir().getAbsolutePath()+ "/", true);
-						FileUtils.chmod(new File(this.getFilesDir().getAbsolutePath()+ "/python/bin/python" ), 755);
+						FileUtils.chmod(new File(this.getFilesDir().getAbsolutePath()+ "/python/bin/python" ), 0755);
 					}
 					// python extras -> /sdcard/com.android.python27/extras/python
 					else if (sFileName.endsWith(GlobalConstants.PYTHON_EXTRAS_ZIP_NAME)) {

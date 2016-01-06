@@ -47,8 +47,12 @@ build_openssl() {
 
 build_python() {
     cd $ROOTDIR/Python
-    make distclean
-    ./configure --host=arm-eabi --build=i386-linux-gnu --enable-shared
+
+    if [ -f .fpass ]; then
+      make distclean
+    fi
+
+    ./configure --host=arm-eabi --build=i386-linux-gnu --enable-ipv6 --enable-shared
     cat pyconfig.h \
     | sed -e '/HAVE_FDATASYNC/ c#undef HAVE_FDATASYNC' \
     | sed -e '/HAVE_KILLPG/ c#undef HAVE_KILLPG' \
@@ -64,6 +68,8 @@ build_python() {
         $MAKE install HOSTPYTHON=$HOSTPYTHON BLDSHARED="$BLDSHARED" CROSS_COMPILE=arm-eabi- CROSS_COMPILE_TARGET=yes \
         prefix="$ROOTDIR/build" INSTSONAME=libpython2.7.so $MODULE
     fi
+
+    touch .fpass
 }
 
 export PATH=$NDK:$PATH
@@ -84,4 +90,17 @@ export MODULE=""
 export BLDSHARED="arm-linux-androideabi-gcc -shared $CFLAGS -L$ROOTDIR -lpython2.7 -Wl,--no-undefined"
 
 build_python
+
+# pycrypto-2.6
+cd $ROOTDIR/pycrypto-2.6
+export ac_cv_func_malloc_0_nonnull=yes # to fix rpl_malloc issue
+export ARM_LINKER="arm-linux-androideabi-gcc"
+./configure --host=arm-eabi --enable-shared
+$HOSTPYTHON setup.py bdist
+
+# psutil-0.6.1
+cd $ROOTDIR/psutil-0.6.1
+export ARM_LINKER="arm-linux-androideabi-gcc"
+$HOSTPYTHON setup.py bdist
+
 yes | mv $ROOTDIR/libpython2.7.so $ROOTDIR/build/lib/libpython2.7.so

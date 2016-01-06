@@ -1,7 +1,30 @@
+/*
+ * Copyright (C) 2010 Google Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ */
+
+/*
+ * Copyright (C) 2012, Anthony Prieur & Daniel Oppenheim. All rights reserved.
+ *
+ * Original from SL4A modified to allow to embed Interpreter and scripts into an APK
+ */
+
 package com.android.python27.process;
 
 import android.os.Environment;
 
+import com.android.python27.ScriptApplication;
 import com.android.python27.config.GlobalConstants;
 import com.googlecode.android_scripting.Analytics;
 import com.googlecode.android_scripting.AndroidProxy;
@@ -40,35 +63,10 @@ public class InterpreterProcess extends Process {
     mProxy = paramAndroidProxy;
     mInterpreter = myInterpreter.getInterpreter();
 
-//    if(mInterpreter != null) {
-//        binary = mInterpreter.getBinary();
-//        niceName = mInterpreter.getNiceName();
-//        pyname = mInterpreter.getName();
-//        interactiveCommand = mInterpreter.getInteractiveCommand();
-//        arguments = myInterpreter.getArguments();
-//        environmentVariables = mInterpreter.getEnvironmentVariables();	
-//    }
-//    // this means we are using our embedded python
-//    else {
-    	niceName = GlobalConstants.PYTHON_NICE_NAME;
-        pyname = "python";
-        interactiveCommand = "";
-        arguments = new ArrayList<String>();
-//    }
-    
-//    Log.e("mInterpreter.getBinary() " + binary );
-//    Log.e("mInterpreter.getNiceName() " + niceName);
-//    Log.e("mInterpreter.getName() " + pyname);
-//    Log.e("mInterpreter.getInteractiveCommand() " + interactiveCommand);
-//    Log.e("myInterpreter.getArguments( " + arguments);
-//    Log.e("mInterpreter.getEnvironmentVariables() " + environmentVariables);
-//
-//    Log.e("System.getenv() " + System.getenv());
-//    Log.e("getHost() " + getHost());
-//    Log.e("Integer.toString(getPort()) " + Integer.toString(getPort()));
-//    if (paramAndroidProxy.getSecret() != null) {
-//        Log.e("getSecret() " + getSecret());
-//    }
+  	niceName = "Python 2.7.2";
+    pyname = "python";
+    interactiveCommand = "";
+    arguments = new ArrayList<String>();
     
     if(binary != null) {
         setBinary(binary);
@@ -120,7 +118,7 @@ public class InterpreterProcess extends Process {
 
   @Override
   public String getSdcardPackageDirectory() {
-    return Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + GlobalConstants.PACKAGE_NAME;
+    return Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + ScriptApplication.getThePackageName();
   }
   
   public RpcReceiverManagerFactory getRpcReceiverManagerFactory()
